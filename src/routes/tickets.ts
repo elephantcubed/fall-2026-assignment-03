@@ -103,7 +103,63 @@ router.patch('/:id/status', authMiddleware, async (req, res, next) => {
 
 // TODO: Student implementation - Part 2: Time Log Routes
 // POST /tickets/:id/time
+router.post('/:id/time', authMiddleware, async (req, res, next) => {
+  const id = Number(req.params.id);
+  const { hours } = req.body ?? {};
+ 
+  if (!Number.isSafeInteger(id) || id <= 0) {
+    res.status(400).json({ error: 'ERROR: Invalid ticket ID' });
+    return;
+  }
+ 
+  if (typeof hours !== 'number' || !Number.isFinite(hours) || hours <= 0) {
+    res.status(400).json({ error: 'ERROR: Hours must be a positive number' });
+    return;
+  }
+ 
+  try {
+    const ticket = await getTicketById(id);
+ 
+    if (!ticket) {
+      res.status(404).json({ error: 'ERROR: Ticket not found' });
+      return;
+    }
+ 
+    const log = await insertTimeLog(id, res.locals.userId, hours);
+ 
+    res.status(201).json(log);
+  } catch (error) {
+    next(error);
+  }
+});
+ 
 // GET /tickets/:id/time
+router.get('/:id/time', async (req, res, next) => {
+  const id = Number(req.params.id);
+ 
+  if (!Number.isSafeInteger(id) || id <= 0) {
+    res.status(400).json({ error: 'ERROR: Invalid ticket ID' });
+    return;
+  }
+ 
+  try {
+    const ticket = await getTicketById(id);
+ 
+    if (!ticket) {
+      res.status(404).json({ error: 'ERROR: Ticket not found' });
+      return;
+    }
+ 
+    const totalHours = await getTotalHoursForTicket(id);
+ 
+    res.status(200).json({
+      ticket_id: id,
+      total_hours: Number(totalHours ?? 0),
+    });
+  } catch (error) {
+    next(error);
+  }
+});
 
 
 export default router;
