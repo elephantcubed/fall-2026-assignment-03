@@ -5,8 +5,20 @@ export function authMiddleware(
   res: Response,
   next: NextFunction,
 ): void {
-  // TODO: Student implementation - Part 1: Authentication Middleware
-  // Store the authenticated userId on res.locals.userId
+
+  const header = req.header('X-user-id');
+
+  if (!header) {
+    res.status(401).json({error: 'ERROR: Invalid Header'});
+  }
+
+  const userID = Number(header);
+
+  if (userID <= 0 || !Number.isInteger(userID)) {
+    res.status(401).json({error: 'ERROR: Invalid User ID'});
+  }
+
+  res.locals.userID = userID;
   next();
 }
 
