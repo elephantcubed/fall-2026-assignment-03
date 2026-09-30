@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Migrator, Migration, MigrationProvider, Kysely } from 'kysely';
+import { Kysely } from 'kysely';
+import { Migrator } from 'kysely/migration';
+import type { Migration, MigrationProvider } from 'kysely/migration';
 import * as initialSchema from './migrations/001_initial_schema.js';
 import * as timeLogs from './migrations/002_time_logs.js';
 import { db } from './database.js';
